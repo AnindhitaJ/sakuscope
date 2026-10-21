@@ -19,6 +19,8 @@ button.b{background:var(--ac);color:#fff;border:0;cursor:pointer}button.l{backgr
 </style></head><body><div id="app"></div>
 <nav id="nv"></nav>
 <script>
+const _er=m=>{const d=document.createElement('div');d.style.cssText='position:fixed;top:0;left:0;right:0;background:#c2410c;color:#fff;padding:8px;font-size:12px;z-index:99';d.textContent='Error: '+m;document.body.appendChild(d)};
+addEventListener('error',v=>_er(v.message+' ('+(v.lineno||'')+')'));addEventListener('unhandledrejection',v=>_er(String(v.reason&&v.reason.message||v.reason)));
 const K='saku1';let S=null;try{S=JSON.parse(localStorage.getItem(K))}catch(x){}
 if(!S)S={w:[{id:1,n:'Cash',b:0},{id:2,n:'Bank',b:0}],c:['Food & Beverage','Transportation','Shopping','Bills & Utilities','Entertainment','Health','Housing','Education','Others','Gaji'],t:[],bud:{},th:25000};
 const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(x){}clearTimeout(window._p);window._p=setTimeout(()=>push(),600)};S.rc=S.rc||[];let Z=6;
@@ -137,7 +139,7 @@ function inq(){const i=inc(M),p=sum(inc(pm(M)));if(!i.length)return 'Belum ada p
 
 const SB_URL='https://wbkvfvdajsfuntrdtyjx.supabase.co',SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6India3ZmdmRhanNmdW50cmR0eWp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwMzYzMTMsImV4cCI6MjA5OTYxMjMxM30.lc40aFRBiVBS4Y2M8WaZql124YQOZQy5oBON8jgJNA4';
 let sb=null,UID=null,H={},busy=0,again=0,syncMsg='';
-const ID=()=>crypto.randomUUID(),KEY={saku_wallets:'id',saku_categories:'name',saku_transactions:'id',saku_budgets:'category',saku_recurring:'id'},CF={saku_categories:'user_id,name',saku_budgets:'user_id,category'},ORD=['saku_wallets','saku_categories','saku_budgets','saku_transactions','saku_recurring'],wU=id=>{const w=S.w.find(x=>x.id==id);return w?w.u:null};
+const ID=()=>crypto.randomUUID?crypto.randomUUID():'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c=='x'?r:(r&3|8)).toString(16)}),KEY={saku_wallets:'id',saku_categories:'name',saku_transactions:'id',saku_budgets:'category',saku_recurring:'id'},CF={saku_categories:'user_id,name',saku_budgets:'user_id,category'},ORD=['saku_wallets','saku_categories','saku_budgets','saku_transactions','saku_recurring'],wU=id=>{const w=S.w.find(x=>x.id==id);return w?w.u:null};
 function rows(){S.w.forEach(w=>w.u=w.u||ID());S.t.forEach(t=>t.u=t.u||ID());S.rc.forEach(r=>r.u=r.u||ID());
 return{saku_wallets:S.w.map(w=>({id:w.u,name:w.n,initial_balance:Math.round(w.b||0)})),saku_categories:S.c.map(n=>({name:n})),
 saku_budgets:Object.entries(S.bud).filter(x=>Number.isFinite(+x[1])&&x[1]>=0).map(x=>({category:x[0],amount:Math.round(x[1])})),
