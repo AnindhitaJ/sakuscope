@@ -1,4 +1,4 @@
-<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#0f766e"><title>SakuScope</title><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#0f766e"><title>SakuScope</title><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <style>
 :root{--bg:#f6f7f9;--cd:#fff;--tx:#1b2430;--mu:#6b7686;--bd:#e3e7ec;--ac:#0f766e;--rd:#c2410c;--gn:#15803d;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10151b;--cd:#18202a;--tx:#e8edf3;--mu:#93a0b0;--bd:#2a3541;--ac:#2dd4bf;--rd:#fb923c;--gn:#4ade80;color-scheme:dark}}
@@ -21,7 +21,7 @@ button.b{background:var(--ac);color:#fff;border:0;cursor:pointer}button.l{backgr
 <script>
 const K='saku1';let S=null;try{S=JSON.parse(localStorage.getItem(K))}catch(x){}
 if(!S)S={w:[{id:1,n:'Cash',b:0},{id:2,n:'Bank',b:0}],c:['Food & Beverage','Transportation','Shopping','Bills & Utilities','Entertainment','Health','Housing','Education','Others','Gaji'],t:[],bud:{},th:25000};
-const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(x){}};S.rc=S.rc||[];let Z=6;
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(x){}clearTimeout(window._p);window._p=setTimeout(()=>push(),600)};S.rc=S.rc||[];let Z=6;
 let tab='dash',M=new Date().toISOString().slice(0,7),F={q:'',ty:'',c:'',n:'',all:0},ed=null,msg='';
 const $=s=>document.querySelector(s),R=n=>(n<0?'-':'')+'Rp'+Math.abs(Math.round(n)).toLocaleString('id-ID'),
 e=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])),
@@ -77,7 +77,7 @@ function wal(){return `<h2>Dompet</h2>${S.w.map(w=>`<div class="c row"><div><b>$
 <h2>Kategori</h2><div class="c">${S.c.map(c=>e(c)).join(' · ')}</div><div class="row"><input id="nc" placeholder="Kategori baru"><button class="b" onclick="if($('#nc').value.trim()){S.c.push($('#nc').value.trim());save();V()}">Tambah</button></div>
 <h2>Pengaturan analitik</h2><div class="c">Ambang transaksi kecil (Rp) <input type="number" value="${S.th}" onchange="S.th=+this.value||25000;save();V()"></div>
 <h2>Ekspor / impor CSV</h2><div class="c"><textarea id="csv" rows="5" style="width:100%" placeholder="Tempel CSV di sini untuk impor">${e(csv())}</textarea><div class="row" style="margin-top:8px"><button class="l" onclick="$('#csv').select();document.execCommand('copy')">Salin</button><button class="b" onclick="imp()">Impor</button></div><small>Kolom: tanggal,jenis(ex/in/tf),nama,nominal,kategori,dompet,dompet_tujuan,catatan</small></div>
-<h2>Data</h2><button class="l rd" onclick="if(!window._r){window._r=1;this.textContent='Klik lagi untuk hapus SEMUA data'}else{try{localStorage.removeItem(K)}catch(x){}location.reload()}">Hapus semua data</button><br><button class="l" onclick="demo()">Isi data contoh</button>`}
+<h2>Akun</h2>${sb?'<button class="l" onclick="out()">Keluar</button> <small>'+e(syncMsg)+'</small>':'<small>Mode lokal (Supabase belum dikonfigurasi)</small>'}<h2>Data</h2><button class="l rd" onclick="if(!window._r){window._r=1;this.textContent='Klik lagi untuk hapus SEMUA data'}else{try{localStorage.removeItem(K)}catch(x){}location.reload()}">Hapus semua data</button><br><button class="l" onclick="demo()">Isi data contoh</button>`}
 const q=s=>'"'+String(s||'').replace(/"/g,'""')+'"',wn=id=>(S.w.find(w=>w.id==id)||{}).n||'';
 const csv=()=>'tanggal,jenis,nama,nominal,kategori,dompet,dompet_tujuan,catatan\n'+S.t.map(t=>[t.d,t.ty,q(t.n),t.a,q(t.c),q(wn(t.w)),q(wn(t.w2)),q(t.note)].join(',')).join('\n');
 function pl(s){const r=[];let c='',iq=0;for(let i=0;i<s.length;i++){const ch=s[i];if(iq){if(ch=='"'&&s[i+1]=='"'){c+='"';i++}else if(ch=='"')iq=0;else c+=ch}else if(ch=='"')iq=1;else if(ch==','){r.push(c);c=''}else c+=ch}r.push(c);return r}
@@ -134,6 +134,43 @@ function bal(){return `<b>Saldo dompet</b><br>${S.w.map(w=>`• ${e(w.n)}: ${R(w
 function bil(){if(!S.rc.length)return 'Belum ada jadwal tagihan. Tambahkan di tab Rutin.';const mo=r=>r.a*(r.fr=='w'?52/12:r.fr=='y'?1/12:1);return `<b>Tagihan terdekat</b><br>${[...S.rc].sort((a,b)=>a.nx<b.nx?-1:1).slice(0,5).map(r=>`• ${e(r.n)}: ${R(r.a)} pada ${r.nx}${r.nx<td()?' (terlambat)':''}`).join('<br>')}<br><small>Estimasi rutin per bulan: ${R(S.rc.reduce((s,r)=>s+mo(r),0))}. Belum dihitung sebagai pengeluaran sampai dikonfirmasi.</small>`}
 function rem(A){const b=S.bud._all;if(!b)return 'Anggaran total belum diatur. Atur di tab Anggaran.';const bs=S.c.filter(c=>S.bud[c]>0).map(c=>`• ${e(c)}: sisa ${R(S.bud[c]-sum(ex(M).filter(t=>t.c==c)))}`);return `Anggaran ${M}: ${R(b)}, terpakai ${R(A.tot)}, <b>sisa ${R(b-A.tot)}</b>${b<A.tot?' (melebihi)':''}.${bs.length?'<br>'+bs.join('<br>'):''}`}
 function inq(){const i=inc(M),p=sum(inc(pm(M)));if(!i.length)return 'Belum ada pemasukan di '+M+'.';return `Pemasukan ${M}: <b>${R(sum(i))}</b>${p?` (${pm(M)}: ${R(p)}, ${pc(sum(i),p)}%)`:''}.<br>${grp(i,t=>nn(t.n)).slice(0,3).map(g=>`• ${e(Object.keys(g.names)[0])}: ${R(g.tot)}`).join('<br>')}`}
-V();
+
+const SB_URL='https://wbkvfvdajsfuntrdtyjx.supabase.co',SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6India3ZmdmRhanNmdW50cmR0eWp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwMzYzMTMsImV4cCI6MjA5OTYxMjMxM30.lc40aFRBiVBS4Y2M8WaZql124YQOZQy5oBON8jgJNA4';
+let sb=null,UID=null,H={},busy=0,again=0,syncMsg='';
+const ID=()=>crypto.randomUUID(),KEY={saku_wallets:'id',saku_categories:'name',saku_transactions:'id',saku_budgets:'category',saku_recurring:'id'},CF={saku_categories:'user_id,name',saku_budgets:'user_id,category'},ORD=['saku_wallets','saku_categories','saku_budgets','saku_transactions','saku_recurring'],wU=id=>{const w=S.w.find(x=>x.id==id);return w?w.u:null};
+function rows(){S.w.forEach(w=>w.u=w.u||ID());S.t.forEach(t=>t.u=t.u||ID());S.rc.forEach(r=>r.u=r.u||ID());
+return{saku_wallets:S.w.map(w=>({id:w.u,name:w.n,initial_balance:Math.round(w.b||0)})),saku_categories:S.c.map(n=>({name:n})),
+saku_budgets:Object.entries(S.bud).filter(x=>Number.isFinite(+x[1])&&x[1]>=0).map(x=>({category:x[0],amount:Math.round(x[1])})),
+saku_transactions:S.t.map(t=>({id:t.u,tx_date:t.d,name:t.n,amount:Math.round(t.a),type:t.ty,category:t.c,wallet_id:wU(t.w),wallet_to_id:t.ty=='tf'?wU(t.w2):null,note:t.note||null})),
+saku_recurring:S.rc.map(r=>({id:r.u,name:r.n,amount:Math.round(r.a),category:r.c,wallet_id:wU(r.w),freq:r.fr,next_date:r.nx,end_date:r.end||null}))}}
+async function push(){if(!sb||!UID)return;if(busy){again=1;return}busy=1;syncMsg='Menyimpan\u2026';
+try{const RW=rows();for(const t of ORD){const k=KEY[t],cur=new Map(RW[t].map(r=>[r[k],JSON.stringify(r)])),old=H[t]||{},up=RW[t].filter(r=>old[r[k]]!==cur.get(r[k])),gone=Object.keys(old).filter(x=>!cur.has(x));
+for(let i=0;i<up.length;i+=500){const{error}=await sb.from(t).upsert(up.slice(i,i+500),{onConflict:CF[t]||'id'});if(error)throw error}
+for(let i=0;i<gone.length;i+=100){const{error}=await sb.from(t).delete().in(k,gone.slice(i,i+100));if(error)throw error}
+H[t]=Object.fromEntries(cur)}
+if(H.th!==S.th){const{error}=await sb.from('saku_settings').upsert({user_id:UID,small_tx_threshold:Math.round(S.th||25000)},{onConflict:'user_id'});if(error)throw error;H.th=S.th}
+syncMsg='Tersimpan di Supabase'}catch(x){syncMsg='Gagal sinkron: '+(x.message||x);console.error(x)}
+busy=0;if(again){again=0;push()}else if(tab=='wal')V()}
+const all=async t=>{let o=[];for(let i=0;;i+=1000){const{data,error}=await sb.from(t).select('*').order('id').range(i,i+999);if(error)throw error;o=o.concat(data);if(data.length<1000)return o}};
+async function pull(){const[w,c,t,b,r]=await Promise.all(ORD.map(all)),{data:s,error:se}=await sb.from('saku_settings').select('*').maybeSingle();if(se)throw se;
+const tt=t.filter(x=>!x.deleted_at);H={};
+if(!w.length&&!tt.length){await push();return}
+let n=Date.now();const wm={};
+S.w=w.map(x=>{const o={id:n++,u:x.id,n:x.name,b:+x.initial_balance};wm[x.id]=o.id;return o});
+if(c.length)S.c=c.map(x=>x.name);
+S.t=tt.map(x=>({id:n++,u:x.id,d:x.tx_date,n:x.name,a:+x.amount,ty:x.type,c:x.category||(x.type=='tf'?'Transfer':'Others'),w:wm[x.wallet_id],w2:wm[x.wallet_to_id]||null,note:x.note||''}));
+S.bud={};b.forEach(x=>S.bud[x.category]=+x.amount);
+S.rc=r.map(x=>({id:n++,u:x.id,n:x.name,a:+x.amount,c:x.category,w:wm[x.wallet_id],fr:x.freq,nx:x.next_date,end:x.end_date||''}));
+S.th=s?+s.small_tx_threshold:25000;
+const RW=rows();for(const k of ORD)H[k]=Object.fromEntries(RW[k].map(x=>[x[KEY[k]],JSON.stringify(x)]));H.th=S.th;
+try{localStorage.setItem(K,JSON.stringify(S))}catch(x){}syncMsg='Tersinkron'}
+async function start(){try{await pull()}catch(x){syncMsg='Offline / gagal sinkron: '+(x.message||x)}V()}
+function login(m){$('#nv').innerHTML='';$('#app').innerHTML=`<h2 style="margin-top:40px">SakuScope</h2><div class="c"><div class="f" style="grid-template-columns:1fr"><input id="le" type="email" placeholder="Email" autocomplete="username"><input id="lp" type="password" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key=='Enter')doLogin()"></div><div class="row" style="margin-top:8px"><span class="rd">${e(m||'')}</span><button class="b" onclick="doLogin()">Masuk</button></div></div>`}
+async function doLogin(){const{data,error}=await sb.auth.signInWithPassword({email:$('#le').value.trim(),password:$('#lp').value});if(error)return login('Email atau password salah');UID=data.user.id;await start()}
+async function out(){try{await sb.auth.signOut()}catch(x){}try{localStorage.removeItem(K)}catch(x){}location.reload()}
+async function boot(){if(!SB_URL.startsWith('https://')||SB_KEY.startsWith('GANTI')||typeof supabase=='undefined')return V();
+sb=supabase.createClient(SB_URL,SB_KEY);let ss=null;try{ss=(await sb.auth.getSession()).data.session}catch(x){}
+if(!ss)return login();UID=ss.user.id;V();await start()}
+boot();
 if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 </script></body></html>
